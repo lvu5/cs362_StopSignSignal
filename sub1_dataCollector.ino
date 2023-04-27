@@ -10,6 +10,9 @@
     An ultrasonic sensor will be the input device to measure the object's movement. 
     The sensor will detect when the car arrives. The output is the piezo speaker which will ring when the sensor detects a car.
     This Arduino will process and save the data and send them over to the second Arduino.
+    References:
+    https://www.arduino.cc/reference/en/libraries/newping/
+    CS 362 labs
 */
 
 

@@ -12,6 +12,10 @@
     The input devices are the IR receiver and the remote control. 
     The Arduino will receive the input device to receive the data collected from the Arduino above and handle the LEDs. 
     The LEDs are the output. The LED will turn on to notify the driver that it is good to cross the intersection.
+    References:
+    https://www.arduino.cc/reference/en/libraries/irremote/
+    https://circuitdigest.com/microcontroller-projects/interfacing-ir-sensor-module-with-arduino#:~:text=Arduino%20IR%20Sensor%20Interfacing,can%20only%20measure%20infrared%20radiation.
+    
 */
 
 #include <IRremote.h>
@@ -33,7 +37,7 @@ const int RECV_PIN = 10;
 IRrecv irrecv(RECV_PIN);
 decode_results results;
 bool isOn = false;
-//
+
 
 const int N_red = 2;
 const int E_red = 4;
