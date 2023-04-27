@@ -1,3 +1,19 @@
+
+/*
+   1- Author:   Hoang Bao Nghi Bien - hbien2
+                Linh Vu - lvu5
+   2- Project Title: Stop sign crossing priority
+   3- Description: Subsystem 2
+    This system will be used as a receiver. 
+    The controller will receive the data from the collector and process them to handle the lights according to the laws of the road for traffic lights. 
+    The lights will be off initially, it will only turn on to let the car know when it is safe to cross the intersection. 
+    There will also be a remote control for emergency vehicles or person who control the traffic (prioritized objects) 
+    so when they press the button, all 4 lights will blink repeatedly to let drivers know that they must stop.
+    The input devices are the IR receiver and the remote control. 
+    The Arduino will receive the input device to receive the data collected from the Arduino above and handle the LEDs. 
+    The LEDs are the output. The LED will turn on to notify the driver that it is good to cross the intersection.
+*/
+
 #include <IRremote.h>
 #include <SoftwareSerial.h>
 #include <TimerOne.h>
@@ -30,10 +46,6 @@ void setup() {
     pinMode(S_red, OUTPUT);
     pinMode(W_red, OUTPUT);
 
-    // digitalWrite(N_red, HIGH);
-    // digitalWrite(E_red, HIGH);
-    // digitalWrite(S_red, HIGH);
-    // digitalWrite(W_red, HIGH);
 
     digitalWrite(N_red, LOW);
     digitalWrite(E_red, LOW);
@@ -41,12 +53,10 @@ void setup() {
     digitalWrite(W_red, LOW);
 
     Serial.begin(BAUD_RATE);
-    // remoteSerial.begin(BAUD_RATE);
 
     irrecv.enableIRIn();  // Start the IR receiver
     irrecv.blink13(true);
 
-    // Timer1.initialize(1000000);  // initialize timer1, and set a 1/2 second period
     Timer1.attachInterrupt(buttonClick);  // attaches callback() as a timer overflow interrupt
 }
 
@@ -83,15 +93,7 @@ void controlRedLights(char direction) {
             redPin = W_red;
             break;
     }
-
-    // if (direction == 'n')
-    //     redPin = N_red;
-    // if (direction == 'e')
-    //     redPin = E_red;
-    // if (direction == 's')
-    //     redPin = S_red;
-    // if (direction == 'w')
-    //     redPin = W_red;
+    // redPin is the pin that we will turn on to let car go
 
     if (redPin != 0) {
         digitalWrite(redPin, HIGH);
@@ -103,12 +105,9 @@ void controlRedLights(char direction) {
 
 void buttonClick() {
     if (irrecv.decode(&results)) {
-        // Serial.println(results.value, HEX);
         delay(1000);
         isOn = !isOn;
-        // if (results.value == 0xFF30CF) {  // Change this value to the remote control "1" button code
         blinkAllRedLights();
-        // }
         irrecv.resume();  // Receive the next value
     }
 }

@@ -1,6 +1,21 @@
+/*
+   1- Author:   Hoang Bao Nghi Bien - hbien2
+                Linh Vu - lvu5
+   2- Project Title: Stop sign crossing priority
+   3- Description: Subsystem 1
+    This system will be used as a sender.
+    This system will be the data collector to detect whenever the car arrives at the stop sign intersection 
+    and collect the direction of the arriving car (East, West, North or South). 
+    It will send this data to the receiver to handle the lights and cars' priorities. 
+    An ultrasonic sensor will be the input device to measure the object's movement. 
+    The sensor will detect when the car arrives. The output is the piezo speaker which will ring when the sensor detects a car.
+    This Arduino will process and save the data and send them over to the second Arduino.
+*/
+
+
 #include <SoftwareSerial.h>
 #include <NewPing.h>
-// #include <Tone.h>
+
 
 // Define the transmission pins and baud rate
 #define NUM_SONAR 4
@@ -8,10 +23,6 @@ const int RX_PIN = A0;
 const int TX_PIN = A1;
 const int BAUD_RATE = 9600;
 const int threshold = 1; // in centimeters
-
-// SoftwareSerial receiverSerial(RX_PIN, TX_PIN);
-
-
 
 const int buzzer_pin = 10;
 unsigned long previousMillis = 0;
@@ -62,20 +73,10 @@ char data;
 char curr;
 char prev = 'a';
 
-// void playTone(int duration) {
-//   digitalWrite(buzzer_pin, HIGH);
-//   delay(duration);
-//   digitalWrite(buzzer_pin, LOW);
-//   delay(duration);
-// }
 
 void setup() {
     Serial.begin(BAUD_RATE);
     pinMode(buzzer_pin, OUTPUT);
-    // receiverSerial.begin(BAUD_RATE);
-    // for(int i = 2; i < 10; i++){
-    //     pinMode(i, OUTPUT);
-    // }
 }
 
 unsigned int calc_distance(NewPing sensor) {
@@ -105,25 +106,13 @@ void loop() {
     }
     int min_index = min_distance();     
 
-    // Serial.println(min_index);
-    // Serial.println(dist_arr[2]);
-    // Serial.print("The shortest object detect from ");
-    // Serial.println(direction_arr[min_index]);
-    // Serial.println(min_index);
-    // Serial.println(dist_arr[min_index]);
-
-
-    // Serial.println(calc_distance(sonar[0]));
-
-
+    // we send if it is less than 5 cm
     if (dist_arr[min_index] < 5 && dist_arr[min_index] > 0) {
-        // Serial.println("Hello sent");
         // object detected
-        
+        // then we send the direction to the controller (subsystem2)
         sendData(direction_arr[min_index], min_index);
-        
-        // playTone(100);
         if (currentMillis - previousMillis >= interval) {
+            // to make the buzzer rings concurrently
             previousMillis = currentMillis;
             tone(buzzer_pin, 1000);
             delay(500);
@@ -133,6 +122,8 @@ void loop() {
 }
 
 void sendData(char direction, int min_index) {
+    // this if statement is for preventing re-sending
+    // for example if the car keep staying there, it won't resend a signal twice.
     if (direction != prev || abs(dist_arr_prev[min_index] - dist_arr[min_index]) > threshold) {
             dist_arr_prev[min_index] = dist_arr[min_index];
             prev = direction;
